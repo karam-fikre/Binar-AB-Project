@@ -1,0 +1,482 @@
+unit Main;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ExtCtrls,
+  OoMisc, AdStatLt, Vcl.ComCtrls, Vcl.XPMan, Vcl.DBCGrids, Vcl.WinXPanels,
+  AdPort, RzBorder, RzTrkBar, Vcl.Mask, RzEdit, RzDBEdit, RzDBSpin,System.DateUtils,
+  Vcl.Samples.Spin, VaClasses, VaComm, VCLTee.TeCanvas, RzStatus,JSON,JSON.Readers,JSON.Types;
+
+type
+  TForm1 = class(TForm)
+    portComboBox: TComboBox;
+    Label1: TLabel;
+    baudrateComboBox: TComboBox;
+    Label2: TLabel;
+    openPortClickButton: TButton;
+    closePortClickButton: TButton;
+    Label3: TLabel;
+    lightIntensityNumberLabel: TLabel;
+    saveClickButton: TButton;
+    Label4: TLabel;
+    Label5: TLabel;
+    fontComboBox: TComboBox;
+    Label6: TLabel;
+    fontColorComboBox: TComboBox;
+    Label7: TLabel;
+    backgroundColorComboBox: TComboBox;
+    Label8: TLabel;
+    rotateComboBox: TComboBox;
+    Label9: TLabel;
+    Label10: TLabel;
+    flashComboBox: TComboBox;
+    ApdStatusLight1: TApdStatusLight;
+    ConnectLabel: TLabel;
+    Label11: TLabel;
+    fontWidthComboBox: TComboBox;
+    Label12: TLabel;
+    horizontalAligComboBox: TComboBox;
+    Label13: TLabel;
+    verticalAlignComboBox: TComboBox;
+    Label14: TLabel;
+    deleteTextClickButton: TButton;
+    resetClickButton: TButton;
+    okClickButton: TButton;
+    textToDisplayEditor: TEdit;
+    lightIntensityTrackBar: TTrackBar;
+    spacingSpinEdit: TSpinEdit;
+    textAreaRadioGroup: TRadioGroup;
+    ResetAllClickButton: TButton;
+    xPositionSpinEdit: TSpinEdit;
+    yPositionSpinEdit: TSpinEdit;
+    widthSpinEdit: TSpinEdit;
+    heightSpinEdit: TSpinEdit;
+    Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label20: TLabel;
+    VaComm1: TVaComm;
+    scrollSpinEdit: TSpinEdit;
+    RunTimeClickButton: TButton;
+    GameButton: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure openPortClickButtonClick(Sender: TObject);
+    procedure closePortClickButtonClick(Sender: TObject);
+    procedure saveClickButtonClick(Sender: TObject);
+    procedure lightIntensityTrackBarChange(Sender: TObject);
+    procedure okClickButtonClick(Sender: TObject);
+    procedure resetClickButtonClick(Sender: TObject);
+    procedure deleteTextClickButtonClick(Sender: TObject);
+    procedure ResetAllClickButtonClick(Sender: TObject);
+    procedure textAreaRadioGroupClick(Sender: TObject);
+    procedure RunTimeClickButtonClick(Sender: TObject);
+    procedure GameButtonClick(Sender: TObject);
+
+  
+  private
+    { Private declarations }
+  public
+  
+    { Public declarations }
+    function SaveSelectedData():string;
+  end;
+
+var
+
+  Form1: TForm1;
+         saved:boolean;
+         textToSend:string;
+         saveSelectionData:Array[0..15,0..13] of Byte;
+         saveSelectionText:Array[0..15] of string;
+implementation
+
+{$R *.dfm}
+
+uses OpenPortForm, RunTime, Game;
+
+
+
+
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  i: Integer; j:integer;
+begin
+
+
+    //Initialize Ports selection
+    VaComm1.GetComPortNames(portComboBox.Items);
+    portComboBox.ItemIndex:=0;
+
+     //Initialize Baudrate selection
+     baudrateComboBox.Items.Add('9600');
+     baudrateComboBox.Items.Add('19200');
+     baudrateComboBox.Items.Add('38400');
+     baudrateComboBox.Items.Add('57600');
+     baudrateComboBox.Items.Add('115200');
+     baudrateComboBox.ItemIndex := 0;
+
+     //Initialize Font selection
+     fontComboBox.Items.Add('Small');
+     fontComboBox.Items.Add('Centered');
+     fontComboBox.Items.Add('Large');
+     fontComboBox.ItemIndex:=1;
+
+     //Initialize Font Color Selection
+     fontColorComboBox.Items.Add('OFF');
+     fontColorComboBox.Items.Add('Red');
+     fontColorComboBox.Items.Add('Green');
+     fontColorComboBox.Items.Add('Yellow');
+     fontColorComboBox.ItemIndex:=0;
+
+     //Initialize Background Color Selection
+     backgroundColorComboBox.Items.Add('OFF');
+     backgroundColorComboBox.Items.Add('Red');
+     backgroundColorComboBox.Items.Add('Green');
+     backgroundColorComboBox.Items.Add('Yellow');
+     backgroundColorComboBox.ItemIndex:=0;
+
+     //Initialize Rotate selection
+     rotateComboBox.Items.Add('0');
+     rotateComboBox.Items.Add('90');
+     rotateComboBox.Items.Add('180');
+     rotateComboBox.Items.Add('270');
+     rotateComboBox.ItemIndex:=0;
+
+     //Initialize Flash selection
+     flashComboBox.Items.Add('OFF');
+     flashComboBox.Items.Add('ON');
+     flashComboBox.ItemIndex:=0;
+
+     //Initialize Font Width selection
+     fontWidthComboBox.Items.Add('Proportional');
+     fontWidthComboBox.Items.Add('Fixed');
+     fontWidthComboBox.ItemIndex:=0;
+
+     //Initialize Horizontal Alignemt selection
+     horizontalAligComboBox.Items.Add('Align Left');
+     horizontalAligComboBox.Items.Add('Align Right');
+     horizontalAligComboBox.Items.Add('Center');
+     horizontalAligComboBox.ItemIndex:=2;
+
+     //Initialize Vertical Alignemt selection
+     verticalAlignComboBox.Items.Add('Align Top');
+     verticalAlignComboBox.Items.Add('Align Bottom');
+     verticalAlignComboBox.Items.Add('Center');
+     verticalAlignComboBox.ItemIndex:=2;
+
+     //Initialize Spacing SpinEdit
+     spacingSpinEdit.MaxValue:=8;
+     spacingSpinEdit.MinValue:=0;
+     spacingSpinEdit.Increment:=1;
+     spacingSpinEdit.EditorEnabled:=false;
+
+
+     //Initialize Scroll SpinEdit
+     scrollSpinEdit.MaxValue:=16;
+     scrollSpinEdit.MinValue:=0;
+     scrollSpinEdit.Increment:=1;
+     scrollSpinEdit.EditorEnabled:=false;
+
+     //Initialize Light Intensity BrackBar
+     lightIntensityTrackBar.Max:=100;
+     lightIntensityTrackBar.Min:=0;
+     lightIntensityTrackBar.Frequency:=1;
+     lightIntensityTrackBar.LineSize:=1;
+
+
+
+     //Initialize Text Area Group selection and the Array of Saving Text
+     for i := 0 to 15 do begin
+       saveSelectionText[i]:='';
+      textAreaRadioGroup.Items.Add('Text Area '+i.ToString);
+     end;
+
+
+
+
+     //Initialize Position and Size SpinEdit
+     xPositionSpinEdit.Increment:=1;
+     yPositionSpinEdit.Increment:=1;
+     widthSpinEdit.Increment:=1;
+     heightSpinEdit.Increment:=1;
+
+     //Initialize the Array of data saving
+     for i := 0 to 15 do begin
+
+          for j := 0 to 13 do   begin
+              saveSelectionData[i][j]:=0;
+          end;
+
+     end;
+
+
+end;
+
+
+
+
+//Open Port Settings dialog
+procedure TForm1.openPortClickButtonClick(Sender: TObject);
+begin
+Form4.Show;
+end;
+
+
+//Close Port and disable all buttons
+procedure TForm1.closePortClickButtonClick(Sender: TObject);
+begin
+
+ConnectLabel.Caption := 'Ej ansluten';
+ApdStatusLight1.Lit := False;
+Form4.comPortTVaComm.Close;
+
+RunTimeClickButton.Enabled:=False;
+saveClickButton.Enabled:=False;
+resetClickButton.Enabled:=False;
+ResetAllClickButton.Enabled:=False;
+deleteTextClickButton.Enabled:=False;
+textAreaRadioGroup.Enabled:=False;
+okClickButton.Enabled:=False;
+lightIntensityTrackBar.Enabled:=False;
+baudrateComboBox.Enabled:=False;
+GameButton.Enabled:=False;
+
+end;
+
+
+
+
+
+//Save the Baudrate and Light Intensity
+procedure TForm1.saveClickButtonClick(Sender: TObject);
+
+begin
+
+saved:=Form4.comPortTVaComm.WriteText('-dac -b'+ baudrateComboBox.Items[baudrateComboBox.ItemIndex] +' -i'+ lightIntensityNumberLabel.Caption +' <CR>'+#10+#13);
+if saved = True then
+begin
+ShowMessage('Data Saved');
+end
+else
+ShowMessage('Data not Saved');
+
+end;
+
+
+//Text Area Selections on Change text area selection retrive all the data of parameters
+procedure TForm1.textAreaRadioGroupClick(Sender: TObject);
+begin
+
+      {
+        Here I'm retrieving the information stored by the uset from the Array of saving it if the user back to previous selection
+      }
+      xPositionSpinEdit.value:=saveSelectionData[textAreaRadioGroup.ItemIndex][0] ;
+      yPositionSpinEdit.value:=saveSelectionData[textAreaRadioGroup.ItemIndex][1] ;
+      widthSpinEdit.value:=saveSelectionData[textAreaRadioGroup.ItemIndex][2] ;
+      heightSpinEdit.Value:=saveSelectionData[textAreaRadioGroup.ItemIndex][3]  ;
+      fontComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][4] ;
+      spacingSpinEdit.Value:=saveSelectionData[textAreaRadioGroup.ItemIndex][5] ;
+      horizontalAligComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][6] ;
+      verticalAlignComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][7] ;
+      fontWidthComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][8] ;
+      rotateComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][9] ;
+      backgroundColorComboBox.ItemIndex:= saveSelectionData[textAreaRadioGroup.ItemIndex][10] ;
+      scrollSpinEdit.value:=saveSelectionData[textAreaRadioGroup.ItemIndex][11] ;
+      flashComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][12] ;
+      fontColorComboBox.ItemIndex:=saveSelectionData[textAreaRadioGroup.ItemIndex][13] ;
+
+
+      textToDisplayEditor.Text:= saveSelectionText[textAreaRadioGroup.ItemIndex];
+
+
+end;
+
+
+
+//Reset all the parameters for all text areas
+procedure TForm1.ResetAllClickButtonClick(Sender: TObject);
+var i:integer; j:integer;
+begin
+
+ saved:= Form4.comPortTVaComm.WriteText('-dac'+#10+#13);
+
+ if saved = True then
+    begin
+          { Reset the information that the user saved  }
+          for i := 0 to 15 do begin
+          for j := 0 to 13 do   begin
+              saveSelectionData[i][j]:=0;
+          end;
+          saveSelectionText[i]:='';
+          end;
+
+
+          { reset all the parameters to the initial}
+         textToDisplayEditor.Text:='';
+         fontComboBox.ItemIndex:=1;
+         fontColorComboBox.ItemIndex:=0;
+         backgroundColorComboBox.ItemIndex:=0;
+         rotateComboBox.ItemIndex:=0;
+         scrollSpinEdit.value:=0;
+         flashComboBox.ItemIndex:=0;
+         fontWidthComboBox.ItemIndex:=0;
+         horizontalAligComboBox.ItemIndex:=2;
+         verticalAlignComboBox.ItemIndex:=2;
+         spacingSpinEdit.Value:=0;
+         lightIntensityTrackBar.Position:=0;
+         lightIntensityNumberLabel.Caption:='0';
+
+    ShowMessage('Data saved');
+    end
+    else
+    ShowMessage('Data not saved');
+end;
+
+
+//Get Light Intensity form track bar and show it on the label
+procedure TForm1.lightIntensityTrackBarChange(Sender: TObject);
+begin
+    lightIntensityNumberLabel.Caption:=lightIntensityTrackBar.Position.ToString;
+end;
+
+
+//Send the data for the choosen text area.
+procedure TForm1.okClickButtonClick(Sender: TObject);
+var
+  i: Integer;newText:string; st:Array[0..13]of string;
+begin
+        newText:= '-sc' + textAreaRadioGroup.ItemIndex.ToString +
+                  ' -sg'+xPositionSpinEdit.Text+','+yPositionSpinEdit.Text+','+widthSpinEdit.Text+','+heightSpinEdit.Text +
+                  ' -f' + fontComboBox.ItemIndex.ToString +
+                  ' -sls' + spacingSpinEdit.Text +
+                  ' -sha' + horizontalAligComboBox.ItemIndex.ToString +
+                  ' -sva' + verticalAlignComboBox.ItemIndex.ToString +
+                  ' -sfm' + fontWidthComboBox.ItemIndex.ToString +
+                  ' -cf' + fontColorComboBox.ItemIndex.ToString +
+                  ' -t"' + textToDisplayEditor.Text + '"' +
+                  ' -cb' + backgroundColorComboBox.ItemIndex.ToString +
+                  ' -sr' + rotateComboBox.ItemIndex.ToString +
+                  ' -nss' + scrollSpinEdit.Text +
+                  ' -r' + flashComboBox.ItemIndex.ToString +
+                  ' <CR>';
+
+               SaveSelectedData(); //Calling the function for saving the information if the user wanted to go back to it.
+
+      //Adding a word-warp (#10 + #13) to the string before sending it.
+      saved:= Form4.comPortTVaComm.WriteText(newText+#10+#13);
+
+      if saved = True then
+      begin
+      ShowMessage('Data saved');
+      end
+      else
+      ShowMessage('Data not saved');
+end;
+
+
+//Reset parametsers for the chosen text area.
+procedure TForm1.resetClickButtonClick(Sender: TObject);
+var j:integer;
+begin
+     saved:= Form4.comPortTVaComm.WriteText('-sc'+textAreaRadioGroup.ItemIndex.ToString+' -cb0 -dc <CR>'+#10+#13);
+
+     if saved = True then
+      begin
+             {Reset the saved information of the selected area.}
+          for j := 0 to 13 do   begin
+              saveSelectionData[textAreaRadioGroup.ItemIndex][j]:=0;
+          end;
+
+         fontComboBox.ItemIndex:=1;
+         fontColorComboBox.ItemIndex:=0;
+         backgroundColorComboBox.ItemIndex:=0;
+         rotateComboBox.ItemIndex:=0;
+         scrollSpinEdit.value:=0;
+         flashComboBox.ItemIndex:=0;
+         fontWidthComboBox.ItemIndex:=0;
+         horizontalAligComboBox.ItemIndex:=2;
+         verticalAlignComboBox.ItemIndex:=2;
+         spacingSpinEdit.Value:=0;
+
+        ShowMessage('Data saved');
+      end
+      else
+        ShowMessage('Data not saved');
+
+end;
+
+
+
+//Delete the text for the chosen text area.
+procedure TForm1.deleteTextClickButtonClick(Sender: TObject);
+begin
+   Form4.comPortTVaComm.WriteText('-sc'+textAreaRadioGroup.ItemIndex.ToString+' -clr'+#10+#13);
+
+    if saved = True then
+      begin
+       saveSelectionText[textAreaRadioGroup.ItemIndex]:='';
+
+      textToDisplayEditor.Text:='';
+
+      ShowMessage('Data saved');
+      end
+      else
+      ShowMessage('Data not saved');
+end;
+
+
+
+
+//Run the Run Time option and send some fixed data.
+procedure TForm1.RunTimeClickButtonClick(Sender: TObject);
+var dataToBeSend:string;
+begin
+Form2.show();
+
+    dataToBeSend:=' -dac -i100 -sc1 -sg1,1,14,8 -sha2 -f0 -cf0 -cb2 -t"1" '+
+                  '-sc2 -sg16,1,14,8 -sha2 -f0 -cf0 -cb2 -t"2" '+
+                  '-sc3 -sg32,1,14,8 -sha2 -f0 -cf0 -cb2 -t"3" '+
+                  '-sc4 -sg48,1,14,8 -sha2 -f0 -cf0 -cb2 -t"4" <CR>' ;
+
+       Form4.comPortTVaComm.WriteText(dataToBeSend +#10+#13);
+
+       //Set the timer enabled for test.
+       Form2.Timer1.Enabled := True;
+       //set the time interval in millseconds 1sc:=1000;
+       Form2.Timer1.Interval:=3000;
+
+end;
+
+ //This function below is for saving the information selected from the user.
+function TForm1.SaveSelectedData():string;
+begin
+
+        saveSelectionData[textAreaRadioGroup.ItemIndex][0]:= StrToInt(xPositionSpinEdit.Text);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][1]:=StrToInt(yPositionSpinEdit.Text);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][2]:=StrToInt(widthSpinEdit.Text);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][3]:=StrToInt(heightSpinEdit.Text);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][4]:=StrToInt(fontComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][5]:=StrToInt(spacingSpinEdit.Text);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][6]:=StrToInt(horizontalAligComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][7]:=StrToInt(verticalAlignComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][8]:=StrToInt(fontWidthComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][9]:=StrToInt(rotateComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][10]:=StrToInt(backgroundColorComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][11]:=StrToInt(scrollSpinEdit.Text);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][12]:=StrToInt(flashComboBox.ItemIndex.ToString);
+        saveSelectionData[textAreaRadioGroup.ItemIndex][13]:=StrToInt(fontColorComboBox.ItemIndex.ToString);
+        saveSelectionText[textAreaRadioGroup.ItemIndex]:=textToDisplayEditor.Text;
+end;
+
+
+procedure TForm1.GameButtonClick(Sender: TObject);
+begin
+Form4.comPortTVaComm.WriteText('-dac -i100 -sc0 -sg0,0,10,16 -cb3 -f2 -sha2 -sva2 -cf0 -t"0" -sc1 -sg11,0,64,16 -sha2 -sva2 -f2 -cf2 -t"Gissa" <CR>'+#10+#13);
+ Form3.Show();
+end;
+
+end.

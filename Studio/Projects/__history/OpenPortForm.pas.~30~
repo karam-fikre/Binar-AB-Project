@@ -1,0 +1,183 @@
+unit OpenPortForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, RzPanel,
+  RzDlgBtn,VaComm, VaClasses,Unit1;
+
+type
+  TForm4 = class(TForm)
+    baudrateSelection: TComboBox;
+    databitsSelection: TComboBox;
+    stopbitsSelection: TComboBox;
+    StaticText1: TStaticText;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    paritySelection: TComboBox;
+    comPortTVaComm: TVaComm;
+    CloseButton: TButton;
+    Ok: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure CloseButtonClick(Sender: TObject);
+    procedure OkClick(Sender: TObject);
+  private
+    { Private declarations }
+
+  public
+     function GetPortSettings:string;
+    { Public declarations }
+  end;
+
+var
+  Form4: TForm4;
+
+implementation
+
+{$R *.dfm}
+
+
+
+procedure TForm4.FormCreate(Sender: TObject);
+begin
+
+     //Initialize Baudrate selection
+     baudrateSelection.Items.Add('9600');
+     baudrateSelection.Items.Add('19200');
+     baudrateSelection.Items.Add('38400');
+     baudrateSelection.Items.Add('57600');
+     baudrateSelection.Items.Add('115200');
+     baudrateSelection.ItemIndex := 0;
+
+     //Initialize Databits selection
+     databitsSelection.Items.Add('4');
+     databitsSelection.Items.Add('5');
+     databitsSelection.Items.Add('6');
+     databitsSelection.Items.Add('7');
+     databitsSelection.Items.Add('8');
+     databitsSelection.ItemIndex := 4;
+
+     //Initialize Partiy selection
+     paritySelection.Items.Add('None');
+     paritySelection.Items.Add('Odd');
+     paritySelection.Items.Add('Even');
+     paritySelection.Items.Add('Mark');
+     paritySelection.Items.Add('Space');
+     paritySelection.ItemIndex := 0;
+
+     //Initialize Stopbits selection
+     stopbitsSelection.Items.Add('1');
+     stopbitsSelection.Items.Add('1.5');
+     stopbitsSelection.Items.Add('2');
+     stopbitsSelection.ItemIndex := 0;
+
+end;
+
+
+
+procedure TForm4.OkClick(Sender: TObject);
+ var portValue:string;
+begin
+
+portValue:=Form1.portComboBox.Items[Form1.portComboBox.ItemIndex];
+comPortTVaComm.PortNum:=StrToInt(portValue[length(portValue)]);
+
+GetPortSettings;
+comPortTVaComm.Open;
+Form1.ConnectLabel.Caption := 'Connected';
+Form1.ApdStatusLight1.Lit := True;
+Form1.saveClickButton.Enabled:=True;
+Form1.resetClickButton.Enabled:=True;
+Form1.ResetAllClickButton.Enabled:=True;
+Form1.deleteTextClickButton.Enabled:=True;
+Form1.textAreaRadioGroup.Enabled:=True;
+Form1.okClickButton.Enabled:=True;
+Form1.lightIntensityTrackBar.Enabled:=True;
+Form1.baudrateComboBox.Enabled:=True;
+Form4.Hide;
+end;
+
+procedure TForm4.CloseButtonClick(Sender: TObject);
+begin
+Form4.Hide;
+end;
+
+
+
+
+
+
+
+
+{
+  TVaBaudrate = (brUser, br110, br300, br600, br1200, br2400, br4800, br9600, br14400,
+    br19200, br38400, br56000, br57600, br115200, br128000, br256000);
+  TVaParity = (paNone, paOdd, paEven, paMark, paSpace);
+  TVaDatabits = (db4, db5, db6, db7, db8);
+  TVaStopbits = (sb1, sb15, sb2);
+
+}
+
+
+function TForm4.GetPortSettings;
+begin
+
+//Get the Baudrate
+  if baudrateSelection.ItemIndex=0 then
+comPortTVaComm.Baudrate:=br9600
+else if baudrateSelection.ItemIndex=1 then
+comPortTVaComm.Baudrate:=br19200
+else if baudrateSelection.ItemIndex=2 then
+comPortTVaComm.Baudrate:=br38400
+else if baudrateSelection.ItemIndex=3 then
+comPortTVaComm.Baudrate:=br57600
+else if baudrateSelection.ItemIndex=4 then
+comPortTVaComm.Baudrate:=br115200;
+
+
+
+
+//Get the databits
+  if databitsSelection.ItemIndex=0 then
+comPortTVaComm.Databits:=db4
+else if databitsSelection.ItemIndex=1 then
+comPortTVaComm.Databits:=db5
+else if databitsSelection.ItemIndex=2 then
+comPortTVaComm.Databits:=db6
+else if databitsSelection.ItemIndex=3 then
+comPortTVaComm.Databits:=db7
+else if databitsSelection.ItemIndex=4 then
+comPortTVaComm.Databits:=db8;
+
+
+
+
+//Get Parity selection
+if paritySelection.ItemIndex=0 then
+comPortTVaComm.Parity:=paNone
+else if paritySelection.ItemIndex=1 then
+comPortTVaComm.Parity:=paOdd
+else if paritySelection.ItemIndex=2 then
+comPortTVaComm.Parity:=paEven
+else if paritySelection.ItemIndex=3 then
+comPortTVaComm.Parity:=paMark
+else if paritySelection.ItemIndex=4 then
+comPortTVaComm.Parity:=paSpace;
+
+//Get Stopbits selection
+if stopbitsSelection.ItemIndex=0 then
+comPortTVaComm.Stopbits:=sb1
+else if stopbitsSelection.ItemIndex=1 then
+comPortTVaComm.Stopbits:=sb15
+else if stopbitsSelection.ItemIndex=2 then
+comPortTVaComm.Stopbits:=sb2;
+
+end;
+
+
+end.
+
+

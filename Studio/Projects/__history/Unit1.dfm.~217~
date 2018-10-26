@@ -1,0 +1,555 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Main'
+  ClientHeight = 390
+  ClientWidth = 803
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesigned
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 14
+  object Label1: TLabel
+    Left = 102
+    Top = 0
+    Width = 61
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Select Port'
+  end
+  object Label2: TLabel
+    Left = 404
+    Top = 3
+    Width = 87
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 0
+    Caption = 'Select Baudrate'
+  end
+  object Label3: TLabel
+    Left = 527
+    Top = 0
+    Width = 79
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Light Intensity'
+  end
+  object lightIntensityNumberLabel: TLabel
+    Left = 649
+    Top = 21
+    Width = 7
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = '0'
+  end
+  object Label4: TLabel
+    Left = 139
+    Top = 165
+    Width = 81
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Text to display'
+  end
+  object Label5: TLabel
+    Left = 139
+    Top = 219
+    Width = 25
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Font'
+  end
+  object Label6: TLabel
+    Left = 251
+    Top = 219
+    Width = 56
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Font Color'
+  end
+  object Label7: TLabel
+    Left = 368
+    Top = 219
+    Width = 91
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'BackgroundColor'
+  end
+  object Label8: TLabel
+    Left = 494
+    Top = 219
+    Width = 37
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Rotate'
+  end
+  object Label9: TLabel
+    Left = 139
+    Top = 275
+    Width = 28
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Scroll'
+  end
+  object Label10: TLabel
+    Left = 251
+    Top = 275
+    Width = 26
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Flash'
+  end
+  object ApdStatusLight1: TApdStatusLight
+    Left = 8
+    Top = 24
+    Width = 12
+    Height = 11
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Lit = False
+    LitColor = clLime
+    NotLitColor = clRed
+  end
+  object ConnectLabel: TLabel
+    Left = 25
+    Top = 22
+    Width = 74
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Disconnected'
+  end
+  object Label11: TLabel
+    Left = 368
+    Top = 275
+    Width = 62
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Font Width'
+  end
+  object Label12: TLabel
+    Left = 494
+    Top = 275
+    Width = 112
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Horizontal Alignment'
+  end
+  object Label13: TLabel
+    Left = 494
+    Top = 326
+    Width = 99
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Vertical Alignment'
+  end
+  object Label14: TLabel
+    Left = 368
+    Top = 326
+    Width = 42
+    Height = 14
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Spacing'
+  end
+  object Label15: TLabel
+    Left = 339
+    Top = 88
+    Width = 42
+    Height = 14
+    Caption = 'Position'
+  end
+  object Label16: TLabel
+    Left = 510
+    Top = 88
+    Width = 21
+    Height = 14
+    Caption = 'Size'
+  end
+  object Label17: TLabel
+    Left = 303
+    Top = 108
+    Width = 30
+    Height = 14
+    Caption = 'X-axis'
+  end
+  object Label18: TLabel
+    Left = 383
+    Top = 108
+    Width = 31
+    Height = 14
+    Caption = 'Y-asix'
+  end
+  object Label19: TLabel
+    Left = 463
+    Top = 108
+    Width = 33
+    Height = 14
+    Caption = 'Width'
+  end
+  object Label20: TLabel
+    Left = 544
+    Top = 108
+    Width = 36
+    Height = 14
+    Caption = 'Height'
+  end
+  object portComboBox: TComboBox
+    Left = 102
+    Top = 20
+    Width = 65
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 0
+  end
+  object baudrateComboBox: TComboBox
+    Left = 404
+    Top = 21
+    Width = 81
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Enabled = False
+    TabOrder = 1
+    Text = 'baudrate'
+  end
+  object openPortClickButton: TButton
+    Left = 175
+    Top = 18
+    Width = 73
+    Height = 23
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Open port'
+    TabOrder = 2
+    OnClick = openPortClickButtonClick
+  end
+  object closePortClickButton: TButton
+    Left = 251
+    Top = 18
+    Width = 75
+    Height = 23
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Close port'
+    TabOrder = 3
+    OnClick = closePortClickButtonClick
+  end
+  object saveClickButton: TButton
+    Left = 680
+    Top = 18
+    Width = 73
+    Height = 23
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Save'
+    Enabled = False
+    ParentShowHint = False
+    ShowHint = False
+    TabOrder = 4
+    OnClick = saveClickButtonClick
+  end
+  object fontComboBox: TComboBox
+    Left = 139
+    Top = 239
+    Width = 91
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 5
+    Text = 'Centered'
+  end
+  object fontColorComboBox: TComboBox
+    Left = 251
+    Top = 239
+    Width = 92
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 6
+    Text = 'OFF'
+  end
+  object backgroundColorComboBox: TComboBox
+    Left = 368
+    Top = 239
+    Width = 97
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 7
+    Text = 'OFF'
+  end
+  object rotateComboBox: TComboBox
+    Left = 494
+    Top = 239
+    Width = 96
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 8
+    Text = '0'
+  end
+  object scrollComboBox: TComboBox
+    Left = 139
+    Top = 294
+    Width = 91
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 9
+    Text = 'OFF'
+  end
+  object flashComboBox: TComboBox
+    Left = 251
+    Top = 294
+    Width = 92
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 10
+    Text = 'OFF'
+  end
+  object fontWidthComboBox: TComboBox
+    Left = 368
+    Top = 294
+    Width = 97
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 11
+    Text = 'Proportional'
+  end
+  object horizontalAligComboBox: TComboBox
+    Left = 494
+    Top = 294
+    Width = 96
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 12
+    Text = 'Aligen Left'
+  end
+  object verticalAlignComboBox: TComboBox
+    Left = 494
+    Top = 345
+    Width = 96
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 13
+    Text = 'Align Top'
+  end
+  object deleteTextClickButton: TButton
+    Left = 632
+    Top = 362
+    Width = 75
+    Height = 23
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Delete Text'
+    Enabled = False
+    TabOrder = 14
+    OnClick = deleteTextClickButtonClick
+  end
+  object resetClickButton: TButton
+    Left = 632
+    Top = 331
+    Width = 75
+    Height = 23
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Reset'
+    Enabled = False
+    TabOrder = 15
+    OnClick = resetClickButtonClick
+  end
+  object okClickButton: TButton
+    Left = 632
+    Top = 301
+    Width = 75
+    Height = 23
+    Caption = 'Ok'
+    Enabled = False
+    TabOrder = 16
+    OnClick = okClickButtonClick
+  end
+  object textToDisplayEditor: TEdit
+    Left = 139
+    Top = 187
+    Width = 118
+    Height = 22
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabOrder = 17
+  end
+  object lightIntensityTrackBar: TTrackBar
+    Left = 495
+    Top = 18
+    Width = 150
+    Height = 29
+    Margins.Left = 0
+    Margins.Top = 0
+    Margins.Right = 0
+    Margins.Bottom = 0
+    Enabled = False
+    TabOrder = 18
+    OnChange = lightIntensityTrackBarChange
+  end
+  object spacingSpinEdit: TSpinEdit
+    Left = 369
+    Top = 347
+    Width = 41
+    Height = 23
+    MaxValue = 0
+    MinValue = 0
+    TabOrder = 19
+    Value = 0
+  end
+  object textAreaRadioGroup: TRadioGroup
+    Left = 8
+    Top = 65
+    Width = 105
+    Height = 302
+    Caption = 'Text Area'
+    Enabled = False
+    TabOrder = 20
+    OnClick = textAreaRadioGroupClick
+  end
+  object ResetAllClickButton: TButton
+    Left = 680
+    Top = 48
+    Width = 75
+    Height = 25
+    Caption = 'Reset All'
+    Enabled = False
+    TabOrder = 21
+    OnClick = ResetAllClickButtonClick
+  end
+  object xPositionSpinEdit: TSpinEdit
+    Left = 303
+    Top = 128
+    Width = 61
+    Height = 23
+    MaxValue = 0
+    MinValue = 0
+    TabOrder = 22
+    Value = 0
+  end
+  object yPositionSpinEdit: TSpinEdit
+    Left = 383
+    Top = 128
+    Width = 61
+    Height = 23
+    MaxValue = 0
+    MinValue = 0
+    TabOrder = 23
+    Value = 0
+  end
+  object widthSpinEdit: TSpinEdit
+    Left = 463
+    Top = 128
+    Width = 61
+    Height = 23
+    MaxValue = 0
+    MinValue = 0
+    TabOrder = 24
+    Value = 0
+  end
+  object heightSpinEdit: TSpinEdit
+    Left = 545
+    Top = 128
+    Width = 61
+    Height = 23
+    MaxValue = 0
+    MinValue = 0
+    TabOrder = 25
+    Value = 0
+  end
+end

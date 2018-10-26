@@ -1,0 +1,266 @@
+unit Unit2;
+
+interface
+
+uses Windows, SysUtils, Dialogs, Masks; // , SetupApi;
+
+type
+  THDEVINFO = THANDLE;
+
+type
+  // types for asynchronous calls
+  TOperationKind = (okWrite, okRead);
+
+  TAsync = record
+    Overlapped: TOverlapped;
+    Kind: TOperationKind;
+    Data: Pointer;
+    Size: Integer;
+  end;
+
+  PAsync = ^TAsync;
+
+  // ------------------------------------------------------------------------------
+  // GUID
+  // ------------------------------------------------------------------------------
+type
+  P_GUID_ = ^_GUID_;
+
+  _GUID_ = record
+    Data1: DWord;
+    Data2: word;
+    Data3: word;
+    Data4: array [0 .. 7] of Byte;
+  end;
+
+const
+  (* USB GUID. *)
+  USB_DRIVER_GUID: _GUID_ = (Data1: $FFFFFFFF; Data2: $FFFF; Data3: $FFFF;
+    Data4: ($FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF));
+
+  { *Call SetupAPI.dll * }
+  SetupAPIFile = 'SetupApi.dll';
+
+  // ------------------------------------------------------------------------------
+  // SP_DEVICE_INTERFACE_DETAIL_DATA_A, *PSP_DEVICE_INTERFACE_DETAIL_DATA_A;
+  // ------------------------------------------------------------------------------
+type
+  P_SP_INTERF_DETAIL_ = ^_SP_INTERF_DETAIL_;
+
+  _SP_INTERF_DETAIL_ = packed record
+    cbSize: DWord;
+    DevPath: AnsiChar;
+  end;
+
+  // ------------------------------------------------------------------------------
+  // SP_DEVICE_INTERFACE_DATA, *PSP_DEVICE_INTERFACE_DATA;
+  // ------------------------------------------------------------------------------
+type
+  P_SP_INTERF_ = ^_SP_INTERF_;
+
+  _SP_INTERF_ = record
+    cbSize: DWord;
+    Guid: _GUID_;
+    Flags: DWord;
+    Reserve: Pointer;
+  end;
+
+  // ------------------------------------------------------------------------------
+  // SP_DEVINFO_DATA, *PSP_DEVINFO_DATA;
+  // ------------------------------------------------------------------------------
+type
+  P_SP_INFO_ = ^_SP_INFO_;
+
+  _SP_INFO_ = record
+    cbSize: DWord;
+    Guid: _GUID_;
+    DevInst: DWord;
+    Reserve: DWord;
+  end;
+
+  // ------------------------------------------------------------------------------
+  // HANDLES for usb BulkIn/BulkOut
+  // ------------------------------------------------------------------------------
+var
+  hMyDevice: THANDLE;
+  hMyDevPipeIn: THANDLE;
+  hMyDevPipeOut: THANDLE;
+  mydevice: string;
+
+function usbOpenMyDevice(): boolean;
+procedure usbCloseMyDevice();
+function chatch_device: Byte;
+function usbRead(TimeOut: DWord; dwCount: DWord; var Buffer): Integer;
+function usbWrite(TimeOut: DWord; dwCount: DWord; const Buffer): Integer;
+function DeviceConnected(): boolean;
+
+implementation
+
+function SetupDiGetClassDevsA(Guid: P_GUID_; Enumrator: PChar; hPar: THANDLE;
+  Flags: DWord): THANDLE; stdcall; external SetupAPIFile;
+
+function SetupDiEnumDeviceInterfaces(DevInfo: THANDLE; InfoData: P_SP_INFO_;
+  Guid: P_GUID_; Index: DWord; DevInterfD: P_SP_INTERF_): bool; stdcall;
+  external SetupAPIFile;
+
+function SetupDiDestroyDeviceInfoList(hPar: THANDLE): bool; stdcall;
+  external SetupAPIFile;
+
+function SetupDiGetDeviceInterfaceDetailA(DevInfo: THANDLE;
+  InterData: P_SP_INTERF_; InfoDetail: P_SP_INTERF_DETAIL_; DetailSize: DWord;
+  ReqSize: PDWord; InfoData: P_SP_INFO_): bool; stdcall; external SetupAPIFile;
+
+// ------------------------------------------------------------------------------
+// use SetupDiGetClassDevsA
+// ------------------------------------------------------------------------------
+const
+  DIGCF_DEFAULT = $001;
+
+const
+  DIGCF_PRESENT = $002;
+
+const
+  DIGCF_ALLCLASSES = $004;
+
+const
+  DIGCF_PROFILE = $008;
+
+const
+  DIGCF_DEVICEINTERFACE = $010;
+
+  // ------------------------------------------------------------------------------
+  // initialization of PAsync variables used in asynchronous calls
+  // ------------------------------------------------------------------------------
+procedure InitAsync(var AsyncPtr: PAsync);
+begin
+  New(AsyncPtr);
+  with AsyncPtr^ do
+  begin
+    FillChar(Overlapped, SizeOf(TOverlapped), 0);
+    Overlapped.hEvent := CreateEvent(nil, True, FALSE, nil);
+    Data := nil;
+    Size := 0;
+  end;
+end;
+
+// ------------------------------------------------------------------------------
+// clean-up of PAsync variable
+// ------------------------------------------------------------------------------
+procedure DoneAsync(var AsyncPtr: PAsync);
+begin
+  with AsyncPtr^ do
+  begin
+    CloseHandle(Overlapped.hEvent);
+    if Data <> nil then
+      FreeMem(Data);
+  end;
+  Dispose(AsyncPtr);
+  AsyncPtr := nil;
+end;
+
+// ------------------------------------------------------------------------------
+// prepare PAsync variable for read/write operation
+// ------------------------------------------------------------------------------
+procedure PrepareAsync(AKind: TOperationKind; const Buffer; Count: Integer;
+  AsyncPtr: PAsync);
+begin
+  with AsyncPtr^ do
+  begin
+    Kind := AKind;
+    if Data <> nil then
+      FreeMem(Data);
+    GetMem(Data, Count);
+    Move(Buffer, Data^, Count);
+    Size := Count;
+  end;
+end;
+
+// ------------------------------------------------------------------------------
+// wait for asynchronous operation to end : TimeOut : Result = -1
+// ------------------------------------------------------------------------------
+function WaitForAsync(hReadOrWrite: THANDLE; TimeOut: DWord;
+  var AsyncPtr: PAsync): Integer;
+var
+  BytesTrans: DWord;
+  // Success: Boolean;
+begin
+  result := -1; // Signaled = WAIT_OBJECT_TIMEOUT
+  if WAIT_OBJECT_0 <> WaitForSingleObject(AsyncPtr^.Overlapped.hEvent, TimeOut)
+  then
+    Exit;
+  if not GetOverlappedResult(hReadOrWrite, AsyncPtr^.Overlapped, BytesTrans,
+    FALSE) then
+    Exit;
+  result := BytesTrans;
+end;
+
+// ------------------------------------------------------------------------------
+// perform asynchronous write operation
+// ------------------------------------------------------------------------------
+function WriteAsync(hWrite: THANDLE; const Buffer; Count: Integer;
+  var AsyncPtr: PAsync): Integer;
+var
+  Success: boolean;
+  BytesTrans: DWord;
+begin
+  result := -1;
+
+  PrepareAsync(okWrite, Buffer, Count, AsyncPtr);
+
+  Success := WriteFile(hWrite, Buffer, Count, BytesTrans, @AsyncPtr^.Overlapped)
+    or (GetLastError = ERROR_IO_PENDING);
+
+  // if Device is not present -- Success is FALSE !
+  if not Success then
+    Exit;
+
+  result := BytesTrans; // if WriteFile is Complete at once
+end;
+
+// ------------------------------------------------------------------------------
+// perform synchronous write operation
+// ------------------------------------------------------------------------------
+function Write(hWrite: THANDLE; TimeOut: DWord; const Buffer;
+  Count: Integer): Integer;
+var
+  AsyncPtr: PAsync;
+begin
+  InitAsync(AsyncPtr);
+  try
+    result := WriteAsync(hWrite, Buffer, Count, AsyncPtr);
+    if result = Count then
+      Exit;
+
+    result := WaitForAsync(hWrite, TimeOut, AsyncPtr);
+  finally
+    DoneAsync(AsyncPtr);
+  end;
+end;
+
+// ------------------------------------------------------------------------------
+// perform asynchronous read operation
+// ------------------------------------------------------------------------------
+function ReadAsync(hRead: THANDLE; var Buffer; Count: Integer;
+  var AsyncPtr: PAsync): Integer;
+var
+  ErrorCode: DWord;
+  BytesTrans: DWord;
+begin
+  result := -1;
+
+  AsyncPtr^.Kind := okRead;
+  PrepareAsync(okRead, Buffer, Count, AsyncPtr);
+
+  if not ReadFile(hRead, Buffer, Count, BytesTrans, @AsyncPtr^.Overlapped) then
+  begin
+    ErrorCode := GetLastError;
+    if (ErrorCode <> ERROR_IO_PENDING) then
+    begin
+      // ShowMessage(SysErrorMessage(GetLastError));
+      Exit;
+    end;
+  end;
+
+  result := BytesTrans;
+end;
+end.

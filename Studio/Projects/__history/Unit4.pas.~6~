@@ -1,0 +1,300 @@
+unit Unit4;
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, AxSerial_TLB, ShellAPI, StdCtrls, ExtCtrls;
+
+type
+  TForm1 = class(TForm)
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    comboDevice: TComboBox;
+    comboSpeed: TComboBox;
+    Label3: TLabel;
+    comboFormat: TComboBox;
+    Label4: TLabel;
+    comboHwFlow: TComboBox;
+    Label5: TLabel;
+    comboSwFlow: TComboBox;
+    buttonOpen: TButton;
+    buttonClose: TButton;
+    GroupBox2: TGroupBox;
+    Label6: TLabel;
+    Label7: TLabel;
+    editData: TEdit;
+    checkDTR: TCheckBox;
+    checkRTS: TCheckBox;
+    buttonSubmit: TButton;
+    Label8: TLabel;
+    Label9: TLabel;
+    GroupBox3: TGroupBox;
+    editReceived: TMemo;
+    Label10: TLabel;
+    GroupBox4: TGroupBox;
+    checkCTS: TCheckBox;
+    checkDSR: TCheckBox;
+    checkDCD: TCheckBox;
+    checkRI: TCheckBox;
+    GroupBox5: TGroupBox;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    editResult: TEdit;
+    editLogfile: TEdit;
+    Button1: TButton;
+    Timer1: TTimer;
+    procedure FormCreate(Sender: TObject);
+    procedure buttonOpenClick(Sender: TObject);
+    procedure buttonCloseClick(Sender: TObject);
+    procedure buttonSubmitClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure checkDTRClick(Sender: TObject);
+    procedure checkRTSClick(Sender: TObject);
+
+  private
+    objComport  : IComport;
+
+    procedure EnableControls ();
+
+    function GetResult () : Integer;
+    function GetTempDirectory () : String;
+
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.FormCreate(Sender: TObject);
+var numDevices : Integer;
+var i          : Integer;
+begin
+  objComport := CoComport.Create ();
+
+  comboDevice.Items.Add( 'COM1' );
+  comboDevice.Items.Add( 'COM2' );
+  comboDevice.Items.Add( 'COM3' );
+  comboDevice.Items.Add( 'COM4' );
+
+  numDevices := objComport. GetDeviceCount ();
+
+  for i := 0 to numDevices do begin
+    comboDevice.Items.Add( objComport.GetDeviceName( i ));
+  end;
+
+  comboDevice.ItemIndex := 0;
+
+  comboSpeed.Items.Add('Default');
+  comboSpeed.Items.Add('110');
+  comboSpeed.Items.Add('300');
+  comboSpeed.Items.Add('600');
+  comboSpeed.Items.Add('1200');
+  comboSpeed.Items.Add('2400');
+  comboSpeed.Items.Add('4800');
+  comboSpeed.Items.Add('9600');
+  comboSpeed.Items.Add('14400');
+  comboSpeed.Items.Add('19200');
+  comboSpeed.Items.Add('28800');
+  comboSpeed.Items.Add('33600');
+  comboSpeed.Items.Add('38400');
+  comboSpeed.Items.Add('56000');
+  comboSpeed.Items.Add('57600');
+  comboSpeed.Items.Add('115200');
+  comboSpeed.Items.Add('128000');
+
+  comboSpeed.ItemIndex := 0;
+
+  comboFormat.Items.Add('Default');
+  comboFormat.Items.Add('n,8,1');
+  comboFormat.Items.Add('e,7,1');
+
+  comboFormat.ItemIndex := 0;
+
+  comboSwFlow.Items.Add('Default');
+  comboSwFlow.Items.Add('Enabled');
+  comboSwFlow.Items.Add('Disbaled');
+
+  comboSwFlow.ItemIndex := 0;
+
+  comboHwFlow.Items.Add('Default');
+  comboHwFlow.Items.Add('Enabled');
+  comboHwFlow.Items.Add('Disbaled');
+
+  comboHwFlow.ItemIndex := 0;
+
+  EnableControls ();
+
+  GetTempDirectory ();
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+function TForm1.GetTempDirectory: string;
+var Buffer: array[0..MAX_PATH] of Char;
+begin
+  GetTempPath(SizeOf(Buffer) - 1, Buffer);
+  editLogfile.Text := StrPas(Buffer) + 'Pop3Log.txt';
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.EnableControls ();
+var bEnabled  : Boolean;
+begin
+  if objComport.IsOpened = false then bEnabled := true else bEnabled := false;
+
+  buttonOpen.Enabled := Not bEnabled;
+  buttonClose.Enabled := bEnabled;
+  buttonSubmit.Enabled := bEnabled;
+  editData.Enabled := bEnabled;
+  checkDTR.Enabled := bEnabled;
+  checkRTS.Enabled := bEnabled;
+  editReceived.Enabled := bEnabled;
+end;
+{////////////////////////////////////////////////////////////////////////////////}
+
+function TForm1.GetResult : Integer;
+begin
+  Result := objComport.LastError;
+   editResult.Text     := 'ERROR ' + IntToStr ( Result ) +  ' : ' + objComport.GetErrorDescription( Result );
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.buttonOpenClick(Sender: TObject);
+begin
+
+  objComport.Device     := comboDevice.Text;
+
+  if ( comboSpeed.Text <> 'Default' ) then begin
+    objComport.BaudRate   := StrToInt ( comboSpeed.Text );
+  end;
+
+  if comboFormat.ItemIndex = 1 then begin
+    objComport.StopBits := objComport.asSTOPBITS_1;
+    objComport.Parity   := objComport.asPARITY_NONE;
+    objComport.DataBits := objComport.asDATABITS_8;
+  end;
+
+  if comboFormat.ItemIndex = 2 then begin
+    objComport.StopBits := objComport.asSTOPBITS_1;
+    objComport.Parity   := objComport.asPARITY_EVEN;
+    objComport.DataBits := objComport.asDATABITS_7;
+  end;
+
+  objComport.HardwareFlowControl := comboHwFlow.ItemIndex;
+  objComport.SoftwareFlowControl := comboSwFlow.ItemIndex;
+
+  objComport.ComTimeout := 100;
+
+  objComport.LogFile := editLogfile.Text;
+
+  objComport.Open ();
+
+  if GetResult () = 0 then begin
+    EnableControls ();
+  end;
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.buttonCloseClick(Sender: TObject);
+begin
+  objComport.Close ();
+
+  if GetResult () = 0 then begin
+    EnableControls ();
+  end;
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.buttonSubmitClick(Sender: TObject);
+begin
+  objComport.WriteString( editData.Text );
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+var Buffer :  WideString;
+begin
+    if ( objComport.IsOpened = false ) then begin
+
+      if ( objComport.QueryCTS () = false ) Then
+        checkCTS.Checked := true
+      else
+        checkCTS.Checked := false;
+
+      if ( objComport.QueryDSR () = false) Then
+        checkDSR.Checked := true
+      else
+        checkDSR.Checked := false;
+
+      if ( objComport.QueryDCD () = false) Then
+        checkDCD.Checked := true
+      else
+        checkDCD.Checked := false;
+
+      if ( objComport.QueryRI () = false) Then
+        checkRI.Checked := true
+      else
+        checkRI.Checked := false;
+
+      Buffer := objComport.ReadString ();
+
+      if Length ( Buffer ) > 0 then begin
+        editReceived.Lines.Add(Buffer);
+      end;
+    end;
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.Button2Click(Sender: TObject);
+var LogFile : PAnsiChar;
+begin
+  LogFile := StrNew(PChar(editLogFile.Text));
+
+  ShellExecute ( 0, 'open' , LogFile, '', '', SW_SHOW )
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.checkDTRClick(Sender: TObject);
+begin
+  if objComport.IsOpened = -1 then begin
+
+    if checkDTR.Checked = true then
+      objComport.RaiseDTR( 1 )
+    else
+      objComport.RaiseDTR( 0 );
+    GetResult ();
+  end;
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+procedure TForm1.checkRTSClick(Sender: TObject);
+begin
+  if objComport.IsOpened = -1 then begin
+
+    if checkRTS.Checked = true then
+      objComport.RaiseRTS( 1 )
+    else
+      objComport.RaiseRTS( 0 );
+    GetResult ();
+  end;
+end;
+
+{////////////////////////////////////////////////////////////////////////////////}
+
+end.

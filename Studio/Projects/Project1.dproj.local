@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2018/10/15 21:49:12.000.056,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/10/15 21:50:14.000.654,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2018/10/17 16:13:44.000.369,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2018/10/17 16:15:26.000.704,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit2.pas=</Transaction>
+    <Transaction>2018/10/17 16:20:28.000.777,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit3.pas</Transaction>
+    <Transaction>2018/10/17 16:24:54.000.653,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit4.pas</Transaction>
+    <Transaction>2018/10/18 14:28:21.000.164,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit3.pas=</Transaction>
+    <Transaction>2018/10/18 14:49:43.000.101,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit4.pas</Transaction>
+    <Transaction>2018/10/18 14:50:10.000.236,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit4.pas=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\OpenPortForm.pas</Transaction>
+    <Transaction>2018/10/18 14:50:10.000.236,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit4.dfm=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\OpenPortForm.dfm</Transaction>
+    <Transaction>2018/10/19 11:37:17.000.736,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Main.pas=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/10/19 11:37:17.000.736,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Main.dfm=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2018/10/22 10:57:31.000.230,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2018/10/22 10:57:42.000.420,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\RunTime.pas=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2018/10/22 10:57:42.000.420,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\RunTime.dfm=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit2.dfm</Transaction>
+    <Transaction>2018/10/24 12:00:49.000.265,=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit3.pas</Transaction>
+    <Transaction>2018/10/24 12:01:37.000.423,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Game.dfm=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit3.dfm</Transaction>
+    <Transaction>2018/10/24 12:01:37.000.423,C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Game.pas=C:\Users\Karam\Documents\Embarcadero\Studio\Projects\Unit3.pas</Transaction>
+  </Transactions>
+</BorlandProject>
