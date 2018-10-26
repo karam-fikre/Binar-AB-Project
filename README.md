@@ -1,1 +1,3 @@
 # Binar-AB-Project
+
+A small project built up using Delphi to send commands to a Display using comPort...
